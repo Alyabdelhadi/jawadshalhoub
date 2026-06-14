@@ -3,7 +3,10 @@ import { sponsorSchema } from "@/lib/sponsor-schema";
 export const runtime = "nodejs";
 
 // Where sponsorship inquiries are delivered when an email provider is wired up.
-const NOTIFY_TO = "Jawad.ahmad.shalhoub@gmail.com";
+// Lowercase: Resend test mode (no verified domain) only delivers to the
+// account owner's exact-case address. Once a domain is verified this can be any
+// recipient/casing.
+const NOTIFY_TO = "jawad.ahmad.shalhoub@gmail.com";
 // Resend requires a verified sender; this is a safe placeholder until a real
 // domain is configured. Swap for an address on a verified domain in prod.
 const NOTIFY_FROM = "Sponsorship <onboarding@resend.dev>";
