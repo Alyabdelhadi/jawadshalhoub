@@ -176,10 +176,12 @@ export default function Globe({
   markers = [],
   autoRotate = true,
 }: GlobeProps) {
-  const { reduced, isMobile, lowPower } = useMotionPrefs();
+  const { reduced, isMobile } = useMotionPrefs();
 
-  // Animate (rotation + traveling dots) only when motion + power allow it.
-  const animate = !reduced && !lowPower;
+  // Animate (rotation + traveling dots) whenever motion is allowed. A small
+  // rotating globe is cheap, so this runs on mobile too — only "Reduce Motion"
+  // freezes it. (lowPower still trims DPR / star count below for performance.)
+  const animate = !reduced;
   const controlsEnabled = !isMobile && !reduced;
 
   return (
