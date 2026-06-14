@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { useMotionPrefs } from "@/lib/use-reduced-motion";
@@ -29,6 +29,29 @@ const VARIANTS: Record<NonNullable<ParticlesProps["variant"]>, VariantConfig> = 
 const FIELD = 10; // half-extent of the cube the particles live in
 
 /**
+ * Build a soft round sprite (white radial gradient fading to transparent) so
+ * the GL points render as snow-like circles instead of hard squares. Tinted at
+ * render time by the material color. Client-only (uses a canvas).
+ */
+function makeCircleTexture(): THREE.Texture {
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d")!;
+  const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+  g.addColorStop(0, "rgba(255,255,255,1)");
+  g.addColorStop(0.35, "rgba(255,255,255,0.85)");
+  g.addColorStop(1, "rgba(255,255,255,0)");
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+  ctx.fill();
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.needsUpdate = true;
+  return tex;
+}
+
+/**
  * Generate a randomized particle field. Kept as a module-scope helper (not
  * inline in render) so the one-time `Math.random` seeding is an explicit,
  * side-effecting factory rather than impure work during component render.
@@ -53,6 +76,10 @@ function ParticleField({ variant, count }: { variant: NonNullable<ParticlesProps
     () => buildParticleField(count),
     [count]
   );
+
+  // Soft round sprite, built once and disposed on unmount.
+  const sprite = useMemo(makeCircleTexture, []);
+  useEffect(() => () => sprite.dispose(), [sprite]);
 
   useFrame((_, delta) => {
     const pts = pointsRef.current;
@@ -81,6 +108,8 @@ function ParticleField({ variant, count }: { variant: NonNullable<ParticlesProps
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
+        map={sprite}
+        alphaMap={sprite}
         color={cfg.color}
         size={cfg.size}
         sizeAttenuation
