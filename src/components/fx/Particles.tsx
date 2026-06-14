@@ -78,7 +78,7 @@ function ParticleField({ variant, count }: { variant: NonNullable<ParticlesProps
   );
 
   // Soft round sprite, built once and disposed on unmount.
-  const sprite = useMemo(makeCircleTexture, []);
+  const sprite = useMemo(() => makeCircleTexture(), []);
   useEffect(() => () => sprite.dispose(), [sprite]);
 
   useFrame((_, delta) => {
