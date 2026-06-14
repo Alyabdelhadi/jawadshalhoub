@@ -12,6 +12,8 @@ export type GlobeProps = {
   className?: string;
   arcs?: Array<{ from: LatLng; to: LatLng }>;
   markers?: LatLng[];
+  /** Index into `markers` to highlight as the journey's origin (pulsing). */
+  originIndex?: number;
   autoRotate?: boolean;
 };
 
@@ -40,17 +42,46 @@ function buildArcPoints(from: LatLng, to: LatLng): THREE.Vector3[] {
   return curve.getPoints(48);
 }
 
-function Marker({ position }: { position: THREE.Vector3 }) {
+function Marker({
+  position,
+  origin = false,
+  animate = false,
+}: {
+  position: THREE.Vector3;
+  origin?: boolean;
+  animate?: boolean;
+}) {
+  const haloRef = useRef<THREE.Mesh>(null);
+
+  // Pulsing halo for the origin marker (the start of the journey).
+  useFrame(() => {
+    const halo = haloRef.current;
+    if (!halo || !origin || !animate) return;
+    const t = performance.now() / 1000;
+    const s = 1 + (Math.sin(t * 2.2) * 0.5 + 0.5) * 0.9;
+    halo.scale.setScalar(s);
+    (halo.material as THREE.MeshBasicMaterial).opacity = 0.28 * (1.9 - s);
+  });
+
+  const coreR = origin ? 0.034 : 0.025;
+  const glowR = origin ? 0.08 : 0.06;
+
   return (
     <group position={position}>
       <mesh>
-        <sphereGeometry args={[0.025, 12, 12]} />
+        <sphereGeometry args={[coreR, 12, 12]} />
         <meshBasicMaterial color="#ed1c24" toneMapped={false} />
       </mesh>
       <mesh>
-        <sphereGeometry args={[0.06, 16, 16]} />
+        <sphereGeometry args={[glowR, 16, 16]} />
         <meshBasicMaterial color="#ed1c24" transparent opacity={0.25} toneMapped={false} />
       </mesh>
+      {origin && (
+        <mesh ref={haloRef}>
+          <sphereGeometry args={[0.1, 16, 16]} />
+          <meshBasicMaterial color="#ed1c24" transparent opacity={0.18} toneMapped={false} />
+        </mesh>
+      )}
     </group>
   );
 }
@@ -94,11 +125,13 @@ function TravelingArc({ points, animate }: { points: THREE.Vector3[]; animate: b
 function GlobeScene({
   arcs,
   markers,
+  originIndex,
   autoRotate,
   animate,
 }: {
   arcs: NonNullable<GlobeProps["arcs"]>;
   markers: NonNullable<GlobeProps["markers"]>;
+  originIndex?: number;
   autoRotate: boolean;
   animate: boolean;
 }) {
@@ -155,7 +188,7 @@ function GlobeScene({
         </mesh>
 
         {markerVecs.map((v, i) => (
-          <Marker key={`m-${i}`} position={v} />
+          <Marker key={`m-${i}`} position={v} origin={i === originIndex} animate={animate} />
         ))}
         {arcPoints.map((pts, i) => (
           <TravelingArc key={`a-${i}`} points={pts} animate={animate} />
@@ -174,6 +207,7 @@ export default function Globe({
   className = "",
   arcs = [],
   markers = [],
+  originIndex,
   autoRotate = true,
 }: GlobeProps) {
   const { reduced, isMobile } = useMotionPrefs();
@@ -198,7 +232,7 @@ export default function Globe({
         {!reduced && (
           <Stars radius={60} depth={40} count={isMobile ? 800 : 2500} factor={3} fade speed={animate ? 0.5 : 0} />
         )}
-        <GlobeScene arcs={arcs} markers={markers} autoRotate={autoRotate} animate={animate} />
+        <GlobeScene arcs={arcs} markers={markers} originIndex={originIndex} autoRotate={autoRotate} animate={animate} />
         {controlsEnabled && (
           <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} rotateSpeed={0.4} />
         )}

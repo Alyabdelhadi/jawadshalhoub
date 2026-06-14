@@ -35,8 +35,15 @@ const CARDS = [
   },
 ] as const;
 
-const ARC = [{ from: CARDS[0].coord, to: CARDS[1].coord }];
-const MARKERS = [CARDS[0].coord, CARDS[1].coord];
+// Origin of the journey — Beirut, Lebanon.
+const BEIRUT = [33.8938, 35.5018] as [number, number];
+
+// Animated route: Beirut -> Africa (Kilimanjaro) -> Europe (Elbrus).
+const ARC = [
+  { from: BEIRUT, to: CARDS[0].coord },
+  { from: CARDS[0].coord, to: CARDS[1].coord },
+];
+const MARKERS = [BEIRUT, CARDS[0].coord, CARDS[1].coord];
 
 type CardProps = {
   mountain: (typeof MOUNTAINS)[number];
@@ -224,25 +231,35 @@ export default function Challenge() {
           ))}
         </div>
 
-        {/* ---- Africa -> Europe globe route ---- */}
+        {/* ---- Beirut -> Africa -> Europe globe route ---- */}
         <div className="mt-20 flex flex-col items-center sm:mt-28">
           <span className="text-xs font-semibold uppercase tracking-[0.4em] text-snow/55">
-            Africa &rarr; Europe
+            Beirut &rarr; Africa &rarr; Europe
           </span>
 
           <div className="relative mt-6 aspect-square w-full max-w-[280px] sm:max-w-[420px]">
             <InView className="absolute inset-0" rootMargin="300px">
-              <Globe arcs={ARC} markers={MARKERS} autoRotate />
+              <Globe arcs={ARC} markers={MARKERS} originIndex={0} autoRotate />
             </InView>
-
-            {/* Continent labels */}
-            <span className="absolute bottom-[18%] left-2 rounded-full bg-ink/60 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-snow/80 backdrop-blur-sm sm:left-4">
-              Africa
-            </span>
-            <span className="absolute right-2 top-[20%] rounded-full bg-ink/60 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-snow/80 backdrop-blur-sm sm:right-4">
-              Europe
-            </span>
           </div>
+
+          {/* Route legend (the globe rotates, so labels live below it) */}
+          <ol className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-snow/75">
+            <li className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-lebanon-red shadow-[0_0_10px_var(--color-lebanon-red)]" />
+              Beirut
+            </li>
+            <li aria-hidden className="text-snow/35">&rarr;</li>
+            <li className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-snow" />
+              Kilimanjaro
+            </li>
+            <li aria-hidden className="text-snow/35">&rarr;</li>
+            <li className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-snow" />
+              Elbrus
+            </li>
+          </ol>
         </div>
       </div>
     </section>

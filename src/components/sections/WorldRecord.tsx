@@ -216,6 +216,7 @@ export default function WorldRecord() {
           <Globe
             arcs={ARCS}
             markers={MARKERS}
+            originIndex={0}
             autoRotate
             className="opacity-90 [transform:translateY(4%)_scale(1.15)] sm:[transform:translateX(18%)_scale(1.2)]"
           />
