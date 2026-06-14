@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+.env*.local
+.DS_Store
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Next.js generated types
+next-env.d.ts
+
+# Raw source media (originals) — app uses public/media instead
+assests/

@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  /* Cinematic palette */
+  --color-ink: #07090c;
+  --color-snow: #f4f7fb;
+  --color-lebanon-red: #ed1c24;
+  --color-lebanon-green: #00a651;
+
+  /* Fonts wired to the next/font CSS variables */
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  --background: var(--color-ink);
+  --foreground: var(--color-snow);
+}
+
+html {
+  background: var(--background);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+}
+
+/* Reusable glass surface */
+.glass {
+  background: color-mix(in srgb, var(--color-ink) 55%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 1px solid color-mix(in srgb, var(--color-snow) 14%, transparent);
+}
+
+/* ---- Shared FX keyframes (consumed by src/components/fx) ---- */
+
+/* LightRays: slow conic sweep + soft vertical drift */
+@keyframes fx-rays-rotate {
+  from {
+    transform: translateX(-50%) rotate(0deg);
+  }
+  to {
+    transform: translateX(-50%) rotate(360deg);
+  }
+}
+
+@keyframes fx-rays-drift {
+  from {
+    transform: translateY(-4%) scale(1.02);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(4%) scale(1.06);
+    opacity: 0.6;
+  }
+}
+
+/* Flag: subtle sine-like wave via skew + translate */
+@keyframes fx-flag-wave {
+  0% {
+    transform: skewY(0deg) translateY(0);
+  }
+  25% {
+    transform: skewY(1.4deg) translateY(-1px);
+  }
+  50% {
+    transform: skewY(0deg) translateY(0);
+  }
+  75% {
+    transform: skewY(-1.4deg) translateY(1px);
+  }
+  100% {
+    transform: skewY(0deg) translateY(0);
+  }
+}
+
+/* Hero: slow continuous background zoom (Ken Burns) */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.hero-video-zoom {
+  animation: hero-zoom 20s ease-in-out infinite alternate;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* Honor reduced-motion globally */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
