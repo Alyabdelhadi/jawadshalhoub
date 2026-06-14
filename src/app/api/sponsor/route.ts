@@ -3,7 +3,7 @@ import { sponsorSchema } from "@/lib/sponsor-schema";
 export const runtime = "nodejs";
 
 // Where sponsorship inquiries are delivered when an email provider is wired up.
-const NOTIFY_TO = "aliabdelhadi64@gmail.com";
+const NOTIFY_TO = "Jawad.ahmad.shalhoub@gmail.com";
 // Resend requires a verified sender; this is a safe placeholder until a real
 // domain is configured. Swap for an address on a verified domain in prod.
 const NOTIFY_FROM = "Sponsorship <onboarding@resend.dev>";
