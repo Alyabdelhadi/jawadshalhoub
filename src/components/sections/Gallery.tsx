@@ -86,8 +86,8 @@ export default function Gallery() {
           </h2>
         </motion.div>
 
-        {/* Masonry columns */}
-        <div className="columns-2 gap-3 sm:gap-4 md:columns-3 lg:columns-4">
+        {/* Uniform grid — flows left → right → down for a consistent layout */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {PHOTOS.map((photo, i) => (
             <motion.button
               key={photo.src}
@@ -102,13 +102,13 @@ export default function Gallery() {
                 delay: reduced ? 0 : (i % 4) * 0.06,
                 ease: [0.16, 1, 0.3, 1],
               }}
-              className="group mb-3 block w-full overflow-hidden rounded-xl border border-snow/10 sm:mb-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lebanon-red focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
+              className="group block w-full overflow-hidden rounded-xl border border-snow/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lebanon-red focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
             >
               <img
                 src={photo.src}
                 alt={photo.alt}
                 loading="lazy"
-                className="w-full object-cover transition-all duration-500 ease-out will-change-transform group-hover:scale-[1.04] group-hover:brightness-110"
+                className="aspect-[4/5] h-full w-full object-cover transition-all duration-500 ease-out will-change-transform group-hover:scale-[1.04] group-hover:brightness-110"
               />
             </motion.button>
           ))}
